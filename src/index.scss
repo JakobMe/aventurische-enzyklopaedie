@@ -1,0 +1,13 @@
+@import './styles/_variables.scss';
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+  background: $color-background;
+  color: $color-text;
+}
+
+* {
+  box-sizing: border-box;
+}

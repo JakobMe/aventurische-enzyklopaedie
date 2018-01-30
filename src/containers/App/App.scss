@@ -1,0 +1,11 @@
+@import '../../styles/_variables.scss';
+
+.App {
+  background: $color-background;
+  color: $color-text;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 32px;
+  height: 100vh;
+}
