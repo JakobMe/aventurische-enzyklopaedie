@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "fuse.js": "3.2.0",
     "normalize.css": "7.0.0",
     "react": "16.2.0",
     "react-dom": "16.2.0",
@@ -15,8 +16,7 @@
     "build": "npm-run-all build-css build-js",
     "test": "react-scripts-ts test --env=jsdom",
     "eject": "react-scripts-ts eject",
-    "format":
-      "prettier --single-quote --write \"src/**/*.@(ts|tsx|json|scss)\"",
+    "format": "prettier --single-quote --write \"src/**/*.@(ts|tsx|scss)\"",
     "build-css": "node-sass-chokidar src/ -o src/ --output-style compressed",
     "watch-css":
       "npm run build-css && node-sass-chokidar src/ -o src/ --watch --recursive"

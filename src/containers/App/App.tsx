@@ -1,32 +1,60 @@
 import * as React from 'react';
 import './App.css';
 import Input from '../../components/Input/Input';
+import wikiData, { WikiData } from '../../data/wikiData';
+import * as Fuse from 'fuse.js';
 
 interface AppState {
-  inputValue: string;
+  query: string;
 }
 
-export default class App extends React.Component<{}, AppState> {
-  constructor(props: {}) {
+interface AppProps {
+  fuseOptions: Fuse.FuseOptions;
+}
+
+export default class App extends React.Component<AppProps, AppState> {
+  private wikiData: WikiData;
+  private fuse: Fuse;
+
+  constructor(props: AppProps) {
     super(props);
+
+    this.wikiData = wikiData;
+    this.fuse = new Fuse(this.wikiData, props.fuseOptions);
+
     this.state = {
-      inputValue: ''
+      query: ''
     };
   }
 
   handleOnChange = (value: string): void => {
     this.setState(() => {
       return {
-        inputValue: value
+        query: value
       };
     });
   };
 
+  getResultHtml = (): { __html: string } => {
+    const results = this.fuse.search(this.state.query) as WikiData;
+    return {
+      __html: results.length ? results[0].content : ''
+    };
+  };
+
   render() {
     return (
-      <div className="App">
-        <Input value={this.state.inputValue} onChange={this.handleOnChange} />
-      </div>
+      <main className="App">
+        <Input
+          className="App__input"
+          value={this.state.query}
+          onChange={this.handleOnChange}
+        />
+        <article
+          className="App__output"
+          dangerouslySetInnerHTML={this.getResultHtml()}
+        />
+      </main>
     );
   }
 }
