@@ -5,11 +5,13 @@ interface InputProps {
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
+  className?: string;
 }
 
 export default class Input extends React.Component<InputProps> {
   public static defaultProps: Partial<InputProps> = {
-    placeholder: '...'
+    placeholder: '',
+    className: ''
   };
 
   handleOnChange = ($event: React.ChangeEvent<HTMLInputElement>) => {
@@ -19,7 +21,7 @@ export default class Input extends React.Component<InputProps> {
   render() {
     return (
       <input
-        className="Input"
+        className={`Input ${this.props.className}`}
         value={this.props.value}
         onChange={this.handleOnChange}
         placeholder={this.props.placeholder}
