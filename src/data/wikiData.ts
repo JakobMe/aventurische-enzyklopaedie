@@ -4,18 +4,20 @@ interface WikiDataRaw {
   };
 }
 
-interface WikiDataItem {
+export interface WikiDataItem {
   tag: string;
   label: string;
   content: string;
 }
 
+export interface WikiDataList extends Array<WikiDataItem> {}
+
 const wikiDataRaw: WikiDataRaw = require('./wikiData.json');
-const wikiData: WikiData = Object.keys(wikiDataRaw).reduce(
-  (dataAll: WikiData, tag: string): WikiData =>
+const wikiData: WikiDataList = Object.keys(wikiDataRaw).reduce(
+  (dataAll: WikiDataList, tag: string): WikiDataList =>
     dataAll.concat(
       Object.keys(wikiDataRaw[tag]).reduce(
-        (dataTag: WikiData, label: string): WikiData =>
+        (dataTag: WikiDataList, label: string): WikiDataList =>
           dataTag.concat({
             tag: tag,
             label: label,
@@ -27,5 +29,4 @@ const wikiData: WikiData = Object.keys(wikiDataRaw).reduce(
   []
 );
 
-export interface WikiData extends Array<WikiDataItem> {}
 export default wikiData;

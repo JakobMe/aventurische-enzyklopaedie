@@ -1,45 +1,48 @@
-import * as React from 'react';
 import './App.css';
-import Input from '../../components/Input/Input';
-import wikiData, { WikiData } from '../../data/wikiData';
+import * as React from 'react';
 import * as Fuse from 'fuse.js';
+import Input from '../../components/Input/Input';
+import { WikiDataList } from '../../data/wikiData';
+import dangerousInnerHTML from '../../utilities/dangerousInnerHTML';
+import getFuseResults from '../../utilities/getFuseResults';
+import areEqual from '../../utilities/areEqual';
 
 interface AppState {
   query: string;
+  selected: number;
+  results: WikiDataList;
 }
 
 interface AppProps {
-  fuseOptions: Fuse.FuseOptions;
+  fuse: Fuse;
+  data: WikiDataList;
 }
 
 export default class App extends React.Component<AppProps, AppState> {
-  private wikiData: WikiData;
-  private fuse: Fuse;
-
   constructor(props: AppProps) {
     super(props);
-
-    this.wikiData = wikiData;
-    this.fuse = new Fuse(this.wikiData, props.fuseOptions);
-
     this.state = {
-      query: ''
+      query: '',
+      selected: 0,
+      results: []
     };
   }
 
   handleOnChange = (value: string): void => {
-    this.setState(() => {
+    this.setState((oldState: AppState) => {
+      const oldResults = oldState.results;
+      const newResults = getFuseResults(this.props.fuse, value);
       return {
-        query: value
+        query: value,
+        selected: areEqual(oldResults, newResults) ? oldState.selected : 0,
+        results: newResults
       };
     });
   };
 
-  getResultHtml = (): { __html: string } => {
-    const results = this.fuse.search(this.state.query) as WikiData;
-    return {
-      __html: results.length ? results[0].content : ''
-    };
+  getOutput = (): string => {
+    const results = this.state.results;
+    return results.length ? results[this.state.selected].content : '';
   };
 
   render() {
@@ -52,7 +55,7 @@ export default class App extends React.Component<AppProps, AppState> {
         />
         <article
           className="App__output"
-          dangerouslySetInnerHTML={this.getResultHtml()}
+          dangerouslySetInnerHTML={dangerousInnerHTML(this.getOutput())}
         />
       </main>
     );
