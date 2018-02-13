@@ -1,11 +1,9 @@
 import './App.css';
 import * as React from 'react';
-import * as Fuse from 'fuse.js';
-import Input from '../../components/Input/Input';
-import { WikiDataList } from '../../data/wikiData';
-import dangerousInnerHTML from '../../utilities/dangerousInnerHTML';
-import getFuseResults from '../../utilities/getFuseResults';
-import areEqual from '../../utilities/areEqual';
+import Input from 'components/Input/Input';
+import { WikiDataList } from 'data/wikiData';
+import dangerousInnerHTML from 'utilities/dangerousInnerHTML';
+import getSearchResults from 'utilities/getSearchResults';
 
 interface AppState {
   query: string;
@@ -13,13 +11,8 @@ interface AppState {
   results: WikiDataList;
 }
 
-interface AppProps {
-  fuse: Fuse;
-  data: WikiDataList;
-}
-
-export default class App extends React.Component<AppProps, AppState> {
-  constructor(props: AppProps) {
+export default class App extends React.Component<{}, AppState> {
+  constructor(props: {}) {
     super(props);
     this.state = {
       query: '',
@@ -29,34 +22,42 @@ export default class App extends React.Component<AppProps, AppState> {
   }
 
   handleOnChange = (value: string): void => {
-    this.setState((oldState: AppState) => {
-      const oldResults = oldState.results;
-      const newResults = getFuseResults(this.props.fuse, value);
+    this.setState(() => {
       return {
         query: value,
-        selected: areEqual(oldResults, newResults) ? oldState.selected : 0,
-        results: newResults
+        selected: 0,
+        results: getSearchResults(value)
       };
     });
   };
 
   getOutput = (): string => {
-    const results = this.state.results;
-    return results.length ? results[this.state.selected].content : '';
+    return this.state.results.length
+      ? this.state.results[this.state.selected].content
+      : '';
   };
 
   render() {
     return (
       <main className="App">
-        <Input
-          className="App__input"
-          value={this.state.query}
-          onChange={this.handleOnChange}
-        />
-        <article
-          className="App__output"
-          dangerouslySetInnerHTML={dangerousInnerHTML(this.getOutput())}
-        />
+        <section className="App__search">
+          <Input
+            className="App__input"
+            value={this.state.query}
+            onChange={this.handleOnChange}
+          />
+          <ul>
+            {this.state.results.map((item, index) => (
+              <li key={index}>{item.label}</li>
+            ))}
+          </ul>
+        </section>
+        <section className="App__article">
+          <article
+            className="App__output"
+            dangerouslySetInnerHTML={dangerousInnerHTML(this.getOutput())}
+          />
+        </section>
       </main>
     );
   }
